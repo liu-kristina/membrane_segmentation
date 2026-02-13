@@ -28,3 +28,6 @@ Predictions are thresholded (0.4) to produce final binary segmentation masks.
 
 The model is trained for 50 epochs resulting in excellent overlapp, dice coefficient of 0.9496.
 
+![Prediction](data/membrane/test/0.png)
+![Prediction](data/membrane/test/0_predict.png)
+
