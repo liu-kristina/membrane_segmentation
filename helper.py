@@ -48,7 +48,31 @@ def make_segmentation_dataset(
 
         return img, mask
 
+    def augment(img, mask):
+        # Random rotation (0, 90, 180, or 270 degrees)
+        k = tf.random.uniform(shape=[], minval=0, maxval=4, dtype=tf.int32)
+        img = tf.image.rot90(img, k)
+        mask = tf.image.rot90(mask, k)
+
+        # Random horizontal flip
+        if tf.random.uniform(()) > 0.5:
+            img = tf.image.flip_left_right(img)
+            mask = tf.image.flip_left_right(mask)
+
+        # Random vertical flip
+        if tf.random.uniform(()) > 0.5:
+            img = tf.image.flip_up_down(img)
+            mask = tf.image.flip_up_down(mask)
+
+        # Brightness and contrast jitter (image only, not mask)
+        img = tf.image.random_brightness(img, max_delta=0.1)
+        img = tf.image.random_contrast(img, lower=0.8, upper=1.2)
+        img = tf.clip_by_value(img, 0.0, 1.0)
+
+        return img, mask
+
     ds = ds.map(load_pair, num_parallel_calls=tf.data.AUTOTUNE)
+    ds = ds.map(augment, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
     return ds
     
